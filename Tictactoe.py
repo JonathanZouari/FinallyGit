@@ -114,16 +114,7 @@ def play(vs_computer):
 def main():
     print("Tic-Tac-Toe")
     while True:
-        mode = input("1 — two players, 2 — vs computer: ").strip()
-        if mode not in {"1", "2"}:
-            print("Choose 1 or 2.")
-            continue
-        play(vs_computer=mode == "2")
-        again = input("Play again? [y/n]: ").strip().lower()
-        if again != "y":
-            print("Goodbye.")
-            return
-
-
+ knik
+ 
 if __name__ == "__main__":
     main()
