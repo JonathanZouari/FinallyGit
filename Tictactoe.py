@@ -44,7 +44,7 @@ def minimax(board, mark, maximizing):
     if board_full(board):
         return 0, None
 
-    opponent = "O" if mark == "X" else "X"
+    opponent = "*" if mark == "!" else "X"
     current = mark if maximizing else opponent
     best_score = -2 if maximizing else 2
     best_move = None
