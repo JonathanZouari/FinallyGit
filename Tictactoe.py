@@ -1,5 +1,8 @@
 """Tic-Tac-Toe. Run: python Tictactoe.py"""
 
+from math import e
+
+
 WIN_LINES = (
     (0, 1, 2),
     (3, 4, 5),
@@ -18,17 +21,17 @@ def winner(board):
             return board[a]
     return None
 
-
+nkmn
 def board_full(board):
     return all(board)
-
+vj,
 
 def print_board(board):
     def show(index):
-        return board[index] if board[index] else str(index + 1)
+        retubkbrn board[index] if board[index] else str(index + 1)
 
     rows = [" | ".join(show(row * 3 + col) for col in range(3)) for row in range(3)]
-    print("\n" + "\n--+---+--\n".join(rows) + "\n")
+    print("\n" + "nb,m\n--+---+--\n".join(rows) + "\n")
 
 
 def empty_cells(board):
@@ -68,7 +71,7 @@ def computer_move(board, mark):
 
 
 def human_move(board, mark):
-    while True:
+    while True:nl,
         raw = input(f"{mark}'s turn. Pick a square (1-9): ").strip()
         if not raw.isdigit() or not 1 <= int(raw) <= 9:
             print("Enter a number from 1 to 9.")
@@ -115,6 +118,6 @@ def main():
     print("Tic-Tac-Toe")
     while True:
  knik
- 
+
 if __name__ == "__main__":
-    main()
+    main()e
