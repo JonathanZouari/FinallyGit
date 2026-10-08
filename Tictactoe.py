@@ -1,5 +1,23 @@
 """Tic-Tac-Toe. Run: python Tictactoe.py"""
 
+import sys
+
+RED = "\033[31m"
+BLUE = "\033[34m"
+RESET = "\033[0m"
+
+if sys.platform == "win32":
+    try:
+        import ctypes
+
+        kernel32 = ctypes.windll.kernel32
+        handle = kernel32.GetStdHandle(-11)
+        mode = ctypes.c_uint32()
+        if kernel32.GetConsoleMode(handle, ctypes.byref(mode)):
+            kernel32.SetConsoleMode(handle, mode.value | 0x0004)
+    except Exception:
+        pass
+
 WIN_LINES = (
     (0, 1, 2),
     (3, 4, 5),
@@ -23,9 +41,17 @@ def board_full(board):
     return all(board)
 
 
+def color_mark(mark):
+    if mark == "X":
+        return f"{RED}X{RESET}"
+    if mark == "O":
+        return f"{BLUE}O{RESET}"
+    return mark
+
+
 def print_board(board):
     def show(index):
-        return board[index] if board[index] else str(index + 1)
+        return color_mark(board[index]) if board[index] else str(index + 1)
 
     rows = [" | ".join(show(row * 3 + col) for col in range(3)) for row in range(3)]
     print("\n" + "\n--+---+--\n".join(rows) + "\n")
@@ -102,7 +128,7 @@ def play(vs_computer):
         found = winner(board)
         if found:
             print_board(board)
-            print(f"{found} wins!")
+            print(f"{color_mark(found)} wins!")
             return
         if board_full(board):
             print_board(board)
