@@ -16,8 +16,8 @@ python Tictactoe.py
 
 Choose a mode when the game starts:
 
-1. **Two players** — take turns as X and O on the same keyboard
-2. **Vs computer** — pick X (goes first) or O; the computer uses minimax and plays optimally
+1. **Two players** — take turns as `*` and `#` on the same keyboard
+2. **Vs computer** — pick `*` (goes first) or `#`; the computer uses minimax and plays optimally
 
 Squares are numbered 1–9, left to right, top to bottom:
 
