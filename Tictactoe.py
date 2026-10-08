@@ -11,7 +11,6 @@ WIN_LINES = (
     (2, 4, 6),
 )
 
-
 def winner(board):
     for a, b, c in WIN_LINES:
         if board[a] and board[a] == board[b] == board[c]:
