@@ -29,4 +29,4 @@ Squares are numbered 1–9, left to right, top to bottom:
 7 | 8 | 9
 ```
 
-Empty squares show their number. Taken squares show `X` or `O`. Enter a number from 1 to 9 on your turn. After a win or a draw, you can play again or quit.
+Empty squares show their number. Taken squares show `X` or `O`. Enter a number from 1 to 9 on your turn. After a win or a draw, you can play again or quit..
