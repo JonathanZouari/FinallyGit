@@ -1,7 +1,9 @@
 """Tic-Tac-Toe. Run: python Tictactoe.py"""
 
-QUESTION = "?"
-AMPERSAND = "&"
+import tkinter as tk
+
+FIRST = "?"
+SECOND = "&"
 
 WIN_LINES = (
     (0, 1, 2),
@@ -16,30 +18,27 @@ WIN_LINES = (
 
 
 def winner(board):
-    for a, b, c in WIN_LINES:
+    for line in WIN_LINES:
+        a, b, c = line
         if board[a] and board[a] == board[b] == board[c]:
-            return board[a]
-    return None
+            return board[a], line
+    return None, ()
 
 
 def board_full(board):
     return all(board)
 
 
-def print_board(board):
-    def show(index):
-        return board[index] if board[index] else str(index + 1)
-
-    rows = [" | ".join(show(row * 3 + col) for col in range(3)) for row in range(3)]
-    print("\n" + "\n--+---+--\n".join(rows) + "\n")
-
-
 def empty_cells(board):
     return [index for index, cell in enumerate(board) if not cell]
 
 
+def other(mark):
+    return SECOND if mark == FIRST else FIRST
+
+
 def minimax(board, mark, maximizing):
-    found = winner(board)
+    found, _ = winner(board)
     if found == mark:
         return 1, None
     if found:
@@ -47,7 +46,7 @@ def minimax(board, mark, maximizing):
     if board_full(board):
         return 0, None
 
-    opponent = AMPERSAND if mark == QUESTION else QUESTION
+    opponent = other(mark)
     current = mark if maximizing else opponent
     best_score = -2 if maximizing else 2
     best_move = None
@@ -64,68 +63,200 @@ def minimax(board, mark, maximizing):
     return best_score, best_move
 
 
-def computer_move(board, mark):
+def best_move(board, mark):
     _, index = minimax(board, mark, True)
-    board[index] = mark
-    print(f"Computer ({mark}) plays square {index + 1}.")
+    return index
 
 
-def human_move(board, mark):
-    while True:
-        raw = input(f"{mark}'s turn. Pick a square (1-9): ").strip()
-        if not raw.isdigit() or not 1 <= int(raw) <= 9:
-            print("Enter a number from 1 to 9.")
-            continue
-        index = int(raw) - 1
-        if board[index]:
-            print("That square is taken. Try again.")
-            continue
-        board[index] = mark
-        return
+class TicTacToeApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Tic-Tac-Toe")
+        self.root.resizable(False, False)
+        self.root.configure(bg="#f4f4f5")
 
+        self.board = [""] * 9
+        self.buttons = []
+        self.turn = FIRST
+        self.vs_computer = False
+        self.human_mark = FIRST
+        self.game_over = False
+        self._computer_job = None
 
-def play(vs_computer):
-    board = [""] * 9
-    human_mark = QUESTION
-    computer_mark = AMPERSAND
+        self._build()
+        self.new_game()
 
-    if vs_computer:
-        choice = input("Play as ? (goes first) or &? [?/&]: ").strip()
-        if choice == AMPERSAND:
-            human_mark, computer_mark = AMPERSAND, QUESTION
+    def _build(self):
+        outer = tk.Frame(self.root, bg="#f4f4f5", padx=16, pady=16)
+        outer.pack()
 
-    turn = QUESTION
-    while True:
-        print_board(board)
-        if vs_computer and turn == computer_mark:
-            computer_move(board, computer_mark)
+        tk.Label(
+            outer,
+            text="Tic-Tac-Toe",
+            font=("Segoe UI", 20, "bold"),
+            bg="#f4f4f5",
+            fg="#18181b",
+        ).pack(pady=(0, 12))
+
+        modes = tk.Frame(outer, bg="#f4f4f5")
+        modes.pack()
+        self.mode_var = tk.StringVar(value="players")
+        tk.Radiobutton(
+            modes,
+            text="Two players",
+            variable=self.mode_var,
+            value="players",
+            command=self._on_mode_change,
+            bg="#f4f4f5",
+            activebackground="#f4f4f5",
+            font=("Segoe UI", 11),
+        ).pack(side="left", padx=8)
+        tk.Radiobutton(
+            modes,
+            text="Vs computer",
+            variable=self.mode_var,
+            value="computer",
+            command=self._on_mode_change,
+            bg="#f4f4f5",
+            activebackground="#f4f4f5",
+            font=("Segoe UI", 11),
+        ).pack(side="left", padx=8)
+
+        self.mark_frame = tk.Frame(outer, bg="#f4f4f5")
+        self.mark_frame.pack(pady=(8, 0))
+        tk.Label(
+            self.mark_frame,
+            text="You play as",
+            bg="#f4f4f5",
+            font=("Segoe UI", 11),
+        ).pack(side="left")
+        self.mark_var = tk.StringVar(value=FIRST)
+        for mark in (FIRST, SECOND):
+            tk.Radiobutton(
+                self.mark_frame,
+                text=mark,
+                variable=self.mark_var,
+                value=mark,
+                command=self._on_mark_change,
+                bg="#f4f4f5",
+                activebackground="#f4f4f5",
+                font=("Segoe UI", 12, "bold"),
+            ).pack(side="left", padx=6)
+
+        self.status = tk.Label(
+            outer,
+            text="",
+            font=("Segoe UI", 13),
+            bg="#f4f4f5",
+            fg="#3f3f46",
+            pady=10,
+        )
+        self.status.pack()
+
+        grid = tk.Frame(outer, bg="#d4d4d8")
+        grid.pack()
+        for index in range(9):
+            button = tk.Button(
+                grid,
+                text="",
+                width=4,
+                height=2,
+                font=("Segoe UI", 22, "bold"),
+                bg="white",
+                activebackground="#e4e4e7",
+                relief="flat",
+                command=lambda i=index: self.on_click(i),
+            )
+            button.grid(row=index // 3, column=index % 3, padx=2, pady=2)
+            self.buttons.append(button)
+
+        tk.Button(
+            outer,
+            text="New game",
+            font=("Segoe UI", 11),
+            command=self.new_game,
+            padx=12,
+            pady=4,
+        ).pack(pady=(14, 0))
+
+    def _on_mode_change(self):
+        self.new_game()
+
+    def _on_mark_change(self):
+        if self.vs_computer:
+            self.new_game()
+
+    def _cancel_computer(self):
+        if self._computer_job is not None:
+            self.root.after_cancel(self._computer_job)
+            self._computer_job = None
+
+    def new_game(self):
+        self._cancel_computer()
+        self.board = [""] * 9
+        self.turn = FIRST
+        self.game_over = False
+        self.vs_computer = self.mode_var.get() == "computer"
+        self.human_mark = self.mark_var.get() if self.vs_computer else FIRST
+        if self.vs_computer:
+            self.mark_frame.pack(pady=(8, 0), before=self.status)
         else:
-            human_move(board, turn)
+            self.mark_frame.pack_forget()
+        for button in self.buttons:
+            button.config(text="", fg="#18181b", bg="white")
+        self._refresh_status()
+        if self.vs_computer and self.turn != self.human_mark:
+            self._schedule_computer()
 
-        found = winner(board)
+    def on_click(self, index):
+        if self.game_over or self.board[index]:
+            return
+        if self.vs_computer and self.turn != self.human_mark:
+            return
+        self._place(index)
+        if not self.game_over and self.vs_computer:
+            self._schedule_computer()
+
+    def _schedule_computer(self):
+        self.status.config(text="Computer is thinking...")
+        self._computer_job = self.root.after(250, self._computer_turn)
+
+    def _computer_turn(self):
+        self._computer_job = None
+        if self.game_over or self.turn == self.human_mark:
+            return
+        self._place(best_move(self.board, self.turn))
+
+    def _place(self, index):
+        mark = self.turn
+        self.board[index] = mark
+        color = "#2563eb" if mark == FIRST else "#be123c"
+        self.buttons[index].config(text=mark, fg=color)
+        found, line = winner(self.board)
         if found:
-            print_board(board)
-            print(f"{found} wins!")
+            self.game_over = True
+            for cell in line:
+                self.buttons[cell].config(bg="#bbf7d0")
+            self.status.config(text=f"{found} wins!")
             return
-        if board_full(board):
-            print_board(board)
-            print("Draw.")
+        if board_full(self.board):
+            self.game_over = True
+            self.status.config(text="Draw.")
             return
-        turn = AMPERSAND if turn == QUESTION else QUESTION
+        self.turn = other(self.turn)
+        self._refresh_status()
+
+    def _refresh_status(self):
+        if self.vs_computer and self.turn != self.human_mark:
+            self.status.config(text="Computer's turn")
+            return
+        self.status.config(text=f"{self.turn}'s turn")
 
 
 def main():
-    print("Tic-Tac-Toe")
-    while True:
-        mode = input("1 — two players, 2 — vs computer: ").strip()
-        if mode not in {"1", "2"}:
-            print("Choose 1 or 2.")
-            continue
-        play(vs_computer=mode == "2")
-        again = input("Play again? [y/n]: ").strip().lower()
-        if again != "y":
-            print("Goodbye.")
-            return
+    root = tk.Tk()
+    TicTacToeApp(root)
+    root.mainloop()
 
 
 if __name__ == "__main__":
