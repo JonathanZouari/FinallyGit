@@ -2,8 +2,8 @@
 
 import tkinter as tk
 
-FIRST = "*"
-SECOND = "#"
+FIRST = "?"
+SECOND = "&"
 
 WIN_LINES = (
     (0, 1, 2),
