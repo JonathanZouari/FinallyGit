@@ -17,7 +17,7 @@ python Tictactoe.py
 1. Choose a mode:
    - `1` — two players on the same keyboard
    - `2` — vs computer
-2. In vs-computer mode, pick **X** (goes first) or **O**.
+2. In vs-computer mode, pick **\*** (goes first) or **#**.
 3. Enter a square number from **1** to **9**:
 
 ```
