@@ -8,15 +8,15 @@ MARK_FIRST = "*"
 MARK_SECOND = "#"
 EMPTY = ""
 
-BG = "#1b1f2a"
-PANEL = "#252b3a"
-CELL_BG = "#323a4d"
-CELL_HOVER = "#3e4860"
-WIN_BG = "#2f6f4e"
-TEXT = "#f4f6fb"
-MUTED = "#a8b0c4"
-STAR = "#7ec8e3"
-HASH = "#f0b27a"
+BG = "#dceeff"
+PANEL = "#ffd4ec"
+CELL_BG = "#ffffff"
+CELL_HOVER = "#ffb6d9"
+WIN_BG = "#9ec8ff"
+TEXT = "#1f2a5a"
+MUTED = "#5a4a78"
+STAR = "#1e6dff"
+HASH = "#e91e8c"
 
 
 class TicTacToeGUI:
@@ -47,7 +47,7 @@ class TicTacToeGUI:
             header,
             text="Tic-Tac-Toe",
             font=("Segoe UI", 22, "bold"),
-            fg=TEXT,
+            fg=HASH,
             bg=BG,
         ).pack(anchor="w")
 
