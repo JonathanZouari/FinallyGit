@@ -115,7 +115,7 @@ def play(vs_computer):
 
 
 def main():
-    print("Tic-Tac-Toe")
+    print("Welcome! Let's play Tic-Tac-Toe.")
     while True:
         mode = input("1 — two players, 2 — vs computer: ").strip()
         if mode not in {"1", "2"}:
