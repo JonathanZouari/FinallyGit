@@ -55,6 +55,10 @@ FinallyGit/
 └── README.md       # This file
 ```
 
+## Developer
+
+Development by Jonathan Zoari
+
 ## License
 
 This project is provided as-is for educational purposes.
