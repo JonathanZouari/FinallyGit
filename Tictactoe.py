@@ -1,5 +1,8 @@
 """Tic-Tac-Toe. Run: python Tictactoe.py"""
 
+FIRST = "*"
+SECOND = "#"
+
 WIN_LINES = (
     (0, 1, 2),
     (3, 4, 5),
@@ -35,6 +38,10 @@ def empty_cells(board):
     return [index for index, cell in enumerate(board) if not cell]
 
 
+def other(mark):
+    return SECOND if mark == FIRST else FIRST
+
+
 def minimax(board, mark, maximizing):
     found = winner(board)
     if found == mark:
@@ -44,7 +51,7 @@ def minimax(board, mark, maximizing):
     if board_full(board):
         return 0, None
 
-    opponent = "O" if mark == "X" else "X"
+    opponent = other(mark)
     current = mark if maximizing else opponent
     best_score = -2 if maximizing else 2
     best_move = None
@@ -83,15 +90,15 @@ def human_move(board, mark):
 
 def play(vs_computer):
     board = [""] * 9
-    human_mark = "X"
-    computer_mark = "O"
+    human_mark = FIRST
+    computer_mark = SECOND
 
     if vs_computer:
-        choice = input("Play as X (goes first) or O? [X/O]: ").strip().upper()
-        if choice == "O":
-            human_mark, computer_mark = "O", "X"
+        choice = input("Play as * (goes first) or #? [* / #]: ").strip()
+        if choice == SECOND:
+            human_mark, computer_mark = SECOND, FIRST
 
-    turn = "X"
+    turn = FIRST
     while True:
         print_board(board)
         if vs_computer and turn == computer_mark:
@@ -108,7 +115,7 @@ def play(vs_computer):
             print_board(board)
             print("Draw.")
             return
-        turn = "O" if turn == "X" else "X"
+        turn = other(turn)
 
 
 def main():
