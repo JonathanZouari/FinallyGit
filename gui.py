@@ -8,11 +8,58 @@ BG = "#161a22"
 PANEL = "#1e2430"
 CELL = "#2c3444"
 CELL_HOVER = "#3a4458"
+HINT_BG = "#3f4f78"
 WIN_BG = "#1f6b45"
+PLACES = (
+    "top left",
+    "top center",
+    "top right",
+    "middle left",
+    "center",
+    "middle right",
+    "bottom left",
+    "bottom center",
+    "bottom right",
+)
 MARK_COLOR = {FIRST: "#ff5c5c", SECOND: "#3fd6e4"}
 TEXT = "#e8edf5"
 MUTED = "#9aa3b5"
 ACCENT = "#4c8dff"
+
+
+def next_step(board, mark):
+    """Return the best square index and a short recommendation for mark."""
+    found = winner(board)
+    if found:
+        return None, f"{found} already won. Start a new game."
+    if board_full(board):
+        return None, "The board is full. It's a draw."
+
+    score, index = minimax(board, mark, True)
+    trial = board[:]
+    trial[index] = mark
+    if winner(trial) == mark:
+        reason = "That wins the game."
+    elif _opponent_can_win(board, other(mark)):
+        reason = "That blocks the opponent."
+    elif score > 0:
+        reason = "That keeps a forced win."
+    elif score < 0:
+        reason = "The opponent can still force a win, and this is the strongest defense."
+    else:
+        reason = "That keeps the game even."
+    return index, f"Play {PLACES[index]} (square {index + 1}) for {mark}. {reason}"
+
+
+def _opponent_can_win(board, mark):
+    for index, cell in enumerate(board):
+        if cell:
+            continue
+        probe = board[:]
+        probe[index] = mark
+        if winner(probe) == mark:
+            return True
+    return False
 
 
 class TicTacToeApp:
@@ -26,6 +73,9 @@ class TicTacToeApp:
         self.waiting_for_computer = False
         self.move_token = 0
         self.buttons = []
+        self.hint_index = None
+        self.hint_text = ""
+        self._chat_state = None
         self._build()
         self.new_game()
 
@@ -38,15 +88,18 @@ class TicTacToeApp:
         outer = tk.Frame(root, bg=BG, padx=28, pady=24)
         outer.pack()
 
+        game = tk.Frame(outer, bg=BG)
+        game.grid(row=0, column=0, sticky="n")
+
         tk.Label(
-            outer,
+            game,
             text="Tic-Tac-Toe",
             bg=BG,
             fg=TEXT,
             font=("Segoe UI", 22, "bold"),
         ).grid(row=0, column=0, pady=(0, 14))
 
-        modes = tk.Frame(outer, bg=BG)
+        modes = tk.Frame(game, bg=BG)
         modes.grid(row=1, column=0, pady=(0, 12))
         self.mode_buttons = {}
         for key, label in (("pvp", "Two players"), ("cpu", "Vs computer")):
@@ -64,7 +117,7 @@ class TicTacToeApp:
             button.pack(side="left", padx=4)
             self.mode_buttons[key] = button
 
-        self.marks = tk.Frame(outer, bg=BG)
+        self.marks = tk.Frame(game, bg=BG)
         self.marks.grid(row=2, column=0, pady=(0, 4))
         tk.Label(
             self.marks,
@@ -90,7 +143,7 @@ class TicTacToeApp:
             self.mark_buttons[mark] = button
 
         self.status = tk.Label(
-            outer,
+            game,
             text="",
             bg=BG,
             fg=TEXT,
@@ -98,7 +151,7 @@ class TicTacToeApp:
         )
         self.status.grid(row=3, column=0, pady=(8, 14))
 
-        board = tk.Frame(outer, bg=BG)
+        board = tk.Frame(game, bg=BG)
         board.grid(row=4, column=0)
         for index in range(9):
             cell = tk.Frame(board, width=108, height=108, bg=CELL)
@@ -119,7 +172,7 @@ class TicTacToeApp:
             self.buttons.append(button)
 
         tk.Button(
-            outer,
+            game,
             text="New game",
             font=("Segoe UI", 11),
             bg=ACCENT,
@@ -133,6 +186,80 @@ class TicTacToeApp:
             cursor="hand2",
             command=self.new_game,
         ).grid(row=5, column=0, pady=(16, 0))
+
+        self._build_chat(outer)
+
+    def _build_chat(self, outer):
+        chat = tk.Frame(outer, bg=BG)
+        chat.grid(row=0, column=1, sticky="ns", padx=(22, 0))
+        tk.Label(
+            chat,
+            text="Coach",
+            bg=BG,
+            fg=TEXT,
+            font=("Segoe UI", 16, "bold"),
+        ).pack(anchor="w", pady=(0, 8))
+        self.transcript = tk.Text(
+            chat,
+            width=34,
+            height=18,
+            wrap="word",
+            bg=PANEL,
+            fg=TEXT,
+            relief="flat",
+            font=("Segoe UI", 10),
+            padx=12,
+            pady=10,
+            state="disabled",
+            cursor="arrow",
+        )
+        self.transcript.tag_config("name", foreground=MUTED, font=("Segoe UI", 9, "bold"))
+        self.transcript.tag_config("coach", foreground="#b7cffc", spacing3=8)
+        self.transcript.tag_config("you", foreground=TEXT, spacing3=8)
+        self.transcript.pack(fill="both", expand=True)
+
+        compose = tk.Frame(chat, bg=BG)
+        compose.pack(fill="x", pady=(10, 0))
+        self.entry = tk.Entry(
+            compose,
+            bg=CELL,
+            fg=TEXT,
+            insertbackground=TEXT,
+            relief="flat",
+            font=("Segoe UI", 11),
+        )
+        self.entry.pack(side="left", fill="x", expand=True, ipady=6)
+        self.entry.bind("<Return>", lambda _event: self._send())
+        tk.Button(
+            compose,
+            text="Send",
+            font=("Segoe UI", 10),
+            bg=ACCENT,
+            fg="white",
+            activebackground="#3b74d6",
+            activeforeground="white",
+            relief="flat",
+            bd=0,
+            padx=12,
+            pady=6,
+            cursor="hand2",
+            command=self._send,
+        ).pack(side="left", padx=(8, 0))
+        tk.Button(
+            chat,
+            text="Next step",
+            font=("Segoe UI", 11),
+            bg=PANEL,
+            fg=TEXT,
+            activebackground=CELL,
+            activeforeground=TEXT,
+            relief="flat",
+            bd=0,
+            padx=12,
+            pady=8,
+            cursor="hand2",
+            command=self._ask_next,
+        ).pack(anchor="w", pady=(8, 0))
 
     def set_mode(self, mode):
         if mode == self.mode:
@@ -152,6 +279,10 @@ class TicTacToeApp:
         self.turn = FIRST
         self.game_over = False
         self.waiting_for_computer = False
+        self.hint_index = None
+        self.hint_text = ""
+        self._chat_state = None
+        self._clear_chat()
         self._style_controls()
         self._finish_if_computer_opens()
 
@@ -220,16 +351,18 @@ class TicTacToeApp:
         return ()
 
     def _paint(self):
+        self._update_hint()
         won = self._winning_indexes()
         locked = self.game_over or self.waiting_for_computer
         for index, button in enumerate(self.buttons):
             mark = self.board[index]
             is_win = index in won
+            bg = self._cell_bg(index)
             button.config(
                 text=mark,
                 fg=MARK_COLOR.get(mark, TEXT),
-                bg=WIN_BG if is_win else CELL,
-                activebackground=WIN_BG if is_win or mark or locked else CELL_HOVER,
+                bg=bg,
+                activebackground=bg if is_win or mark or locked else CELL_HOVER,
                 state="normal",
                 cursor="arrow" if mark or locked else "hand2",
             )
@@ -245,6 +378,79 @@ class TicTacToeApp:
             )
         else:
             self.status.config(text=f"{self.turn} to move", fg=MARK_COLOR[self.turn])
+        self._announce_hint()
+
+    def _cell_bg(self, index):
+        if index in self._winning_indexes():
+            return WIN_BG
+        if index == self.hint_index and not self.board[index]:
+            return HINT_BG
+        return CELL
+
+    def _update_hint(self):
+        if self.game_over or self.waiting_for_computer:
+            self.hint_index = None
+            return
+        if self.mode == "cpu" and self.turn != self.human_mark:
+            self.hint_index = None
+            return
+        self.hint_index, self.hint_text = next_step(self.board, self.turn)
+
+    def _current_advice(self):
+        if self.game_over:
+            won = self._winning_indexes()
+            if won:
+                mark = self.board[won[0]]
+                return f"{mark} won. Start a new game and I'll recommend the opening."
+            return "It's a draw. Start a new game and I'll recommend the opening."
+        if self.waiting_for_computer or (self.mode == "cpu" and self.turn != self.human_mark):
+            return "The computer is moving. Ask again on your turn."
+        return self.hint_text
+
+    def _announce_hint(self):
+        state = (
+            tuple(self.board),
+            self.turn,
+            self.game_over,
+            self.waiting_for_computer,
+            self.mode,
+            self.human_mark,
+        )
+        if state == self._chat_state:
+            return
+        self._chat_state = state
+        self._append("coach", self._current_advice())
+
+    def _ask_next(self):
+        self._append("you", "What's the next step?")
+        self._append("coach", self._current_advice())
+
+    def _send(self):
+        text = self.entry.get().strip()
+        if not text:
+            return
+        self.entry.delete(0, "end")
+        self._append("you", text)
+        self._append("coach", self._reply(text))
+
+    def _reply(self, text):
+        lowered = text.lower()
+        if any(word in lowered for word in ("next", "hint", "move", "step", "recommend", "why", "צעד", "הבא", "המלצ", "למה")):
+            return self._current_advice()
+        return "Ask for the next step, and I'll recommend the best square."
+
+    def _clear_chat(self):
+        self.transcript.config(state="normal")
+        self.transcript.delete("1.0", "end")
+        self.transcript.config(state="disabled")
+
+    def _append(self, who, message):
+        label = "Coach" if who == "coach" else "You"
+        self.transcript.config(state="normal")
+        self.transcript.insert("end", f"{label}\n", "name")
+        self.transcript.insert("end", f"{message}\n", who)
+        self.transcript.config(state="disabled")
+        self.transcript.see("end")
 
     def _on_enter(self, index):
         if self.board[index] or self.game_over or self.waiting_for_computer:
@@ -254,7 +460,7 @@ class TicTacToeApp:
     def _on_leave(self, index):
         if self.board[index] or index in self._winning_indexes():
             return
-        self.buttons[index].config(bg=CELL)
+        self.buttons[index].config(bg=self._cell_bg(index))
 
 
 def main():
