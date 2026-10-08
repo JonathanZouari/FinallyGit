@@ -1,6 +1,34 @@
 """Tic-Tac-Toe on a 3x3, 4x4, or 5x5 board. Run: python Tictactoe.py"""
 
+import sys
+
 MAX_DEPTH = {3: 9, 4: 4, 5: 3}
+RESET = "\033[0m"
+X_STYLE = "\033[1;96m"  # bold bright cyan
+O_STYLE = "\033[1;93m"  # bold bright yellow
+NUM_STYLE = "\033[90m"  # dim gray for empty squares
+
+
+def enable_colors():
+    if sys.platform != "win32":
+        return
+    try:
+        import ctypes
+
+        handle = ctypes.windll.kernel32.GetStdHandle(-11)
+        mode = ctypes.c_uint()
+        if ctypes.windll.kernel32.GetConsoleMode(handle, ctypes.byref(mode)):
+            ctypes.windll.kernel32.SetConsoleMode(handle, mode.value | 0x0004)
+    except OSError:
+        pass
+
+
+def color_mark(mark):
+    if mark == "X":
+        return f"{X_STYLE}X{RESET}"
+    if mark == "O":
+        return f"{O_STYLE}O{RESET}"
+    return mark
 
 
 def win_length_for(size):
@@ -41,14 +69,19 @@ def print_board(board, size):
     width = len(str(size * size))
 
     def show(index):
-        value = board[index] if board[index] else str(index + 1)
-        return value.rjust(width)
+        mark = board[index]
+        if mark:
+            padded = mark.rjust(width)
+            style = X_STYLE if mark == "X" else O_STYLE
+            return f"{style}{padded}{RESET}"
+        return f"{NUM_STYLE}{str(index + 1).rjust(width)}{RESET}"
 
     rows = [
         " | ".join(show(row * size + col) for col in range(size))
         for row in range(size)
     ]
-    divider = "\n" + "".join("+" if ch == "|" else "-" for ch in rows[0]) + "\n"
+    plain = " | ".join("X".rjust(width) for _ in range(size))
+    divider = "\n" + "".join("+" if ch == "|" else "-" for ch in plain) + "\n"
     print("\n" + divider.join(rows) + "\n")
 
 
@@ -124,13 +157,13 @@ def computer_move(board, mark, size, lines):
     if index is None:
         index = empty_cells(board)[0]
     board[index] = mark
-    print(f"Computer ({mark}) plays square {index + 1}.")
+    print(f"Computer ({color_mark(mark)}) plays square {index + 1}.")
 
 
 def human_move(board, mark, size):
     last = size * size
     while True:
-        raw = input(f"{mark}'s turn. Pick a square (1-{last}): ").strip()
+        raw = input(f"{color_mark(mark)}'s turn. Pick a square (1-{last}): ").strip()
         if not raw.isdigit() or not 1 <= int(raw) <= last:
             print(f"Enter a number from 1 to {last}.")
             continue
@@ -167,7 +200,7 @@ def play(vs_computer, size):
         found = winner(board, lines)
         if found:
             print_board(board, size)
-            print(f"{found} wins!")
+            print(f"{color_mark(found)} wins!")
             return
         if board_full(board):
             print_board(board, size)
@@ -185,6 +218,7 @@ def choose_size():
 
 
 def main():
+    enable_colors()
     print("Tic-Tac-Toe")
     while True:
         size = choose_size()
