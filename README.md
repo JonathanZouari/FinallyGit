@@ -19,8 +19,8 @@ python Tictactoe.py
 1. Choose a mode:
    - `1` — two players, taking turns in the terminal
    - `2` — you against the computer
-2. Against the computer, choose `X` (you go first) or `O` (the computer goes first).
-3. Enter a square number from `1` to `9`. Empty squares show their numbers; taken squares show `X` or `O`.
+2. Against the computer, choose `*` (you go first) or `#` (the computer goes first).
+3. Enter a square number from `1` to `9`. Empty squares show their numbers; taken squares show `*` or `#`.
 
 ```
 1 | 2 | 3

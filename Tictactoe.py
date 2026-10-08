@@ -5,9 +5,11 @@ import sys
 RESET = "\033[0m"
 BOLD = "\033[1m"
 DIM = "\033[2m"
+FIRST = "*"
+SECOND = "#"
 PLAYER_COLOR = {
-    "X": "\033[91m",
-    "O": "\033[96m",
+    FIRST: "\033[91m",
+    SECOND: "\033[96m",
 }
 
 WIN_LINES = (
@@ -52,6 +54,10 @@ def color_mark(mark):
     return f"{BOLD}{PLAYER_COLOR[mark]}{mark}{RESET}"
 
 
+def other(mark):
+    return SECOND if mark == FIRST else FIRST
+
+
 def print_board(board):
     def show(index):
         cell = board[index]
@@ -76,7 +82,7 @@ def minimax(board, mark, maximizing):
     if board_full(board):
         return 0, None
 
-    opponent = "O" if mark == "X" else "X"
+    opponent = other(mark)
     current = mark if maximizing else opponent
     best_score = -2 if maximizing else 2
     best_move = None
@@ -115,17 +121,18 @@ def human_move(board, mark):
 
 def play(vs_computer):
     board = [""] * 9
-    human_mark = "X"
-    computer_mark = "O"
+    human_mark = FIRST
+    computer_mark = SECOND
 
     if vs_computer:
         choice = input(
-            f"Play as {color_mark('X')} (goes first) or {color_mark('O')}? [X/O]: "
-        ).strip().upper()
-        if choice == "O":
-            human_mark, computer_mark = "O", "X"
+            f"Play as {color_mark(FIRST)} (goes first) or {color_mark(SECOND)}? "
+            f"[{FIRST}/{SECOND}]: "
+        ).strip()
+        if choice == SECOND:
+            human_mark, computer_mark = SECOND, FIRST
 
-    turn = "X"
+    turn = FIRST
     while True:
         print_board(board)
         if vs_computer and turn == computer_mark:
@@ -142,7 +149,7 @@ def play(vs_computer):
             print_board(board)
             print("Draw.")
             return
-        turn = "O" if turn == "X" else "X"
+        turn = other(turn)
 
 
 def main():
