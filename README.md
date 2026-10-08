@@ -1,15 +1,23 @@
 # Tic-Tac-Toe
 
-A command-line Tic-Tac-Toe game in Python. Play against another person or against the computer.
+A Tic-Tac-Toe game in Python. Play against another person or against the computer from the command line or a GUI.
 
 ## Requirements
 
-- Python 3
+- Python 3 (tkinter is included with a standard Python install)
 
 ## Run
 
+Command line:
+
 ```bash
 python Tictactoe.py
+```
+
+Graphical interface:
+
+```bash
+python Tictactoe_gui.py
 ```
 
 ## How to play
