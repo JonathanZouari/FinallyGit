@@ -44,7 +44,7 @@ def minimax(board, mark, maximizing):
     if board_full(board):
         return 0, None
 
-    opponent = "O" if mark == "X" else "X"
+    opponent = "!" if mark == "#" else "#"
     current = mark if maximizing else opponent
     best_score = -2 if maximizing else 2
     best_move = None
@@ -83,15 +83,15 @@ def human_move(board, mark):
 
 def play(vs_computer):
     board = [""] * 9
-    human_mark = "X"
-    computer_mark = "O"
+    human_mark = "#"
+    computer_mark = "!"
 
     if vs_computer:
-        choice = input("Play as X (goes first) or O? [X/O]: ").strip().upper()
-        if choice == "O":
-            human_mark, computer_mark = "O", "X"
+        choice = input("Play as # (goes first) or !? [#/!]: ").strip()
+        if choice == "!":
+            human_mark, computer_mark = "!", "#"
 
-    turn = "X"
+    turn = "#"
     while True:
         print_board(board)
         if vs_computer and turn == computer_mark:
@@ -108,7 +108,7 @@ def play(vs_computer):
             print_board(board)
             print("Draw.")
             return
-        turn = "O" if turn == "X" else "X"
+        turn = "!" if turn == "#" else "#"
 
 
 def main():
