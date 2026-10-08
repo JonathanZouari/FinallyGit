@@ -121,7 +121,7 @@ def main():
         play(vs_computer=mode == "2")
         again = input("Play again? [y/n]: ").strip().lower()
         if again != "y":
-            print("Goodbye.")
+            print("Goodbye. Have a nice day")
             return
 
 
