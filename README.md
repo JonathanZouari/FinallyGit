@@ -27,7 +27,7 @@ python3 Tictactoe.py
 When the game starts, choose a mode:
 
 1. **Two players** — take turns on the same keyboard.
-2. **Vs computer** — play against the AI. You can choose **X** (goes first) or **O**.
+2. **Vs computer** — play against the AI. You can choose **\*** (goes first) or **\#**.
 
 The board is numbered **1–9**:
 
@@ -44,6 +44,6 @@ Enter a number to place your mark on that square. The game ends with a win or a 
 ## Features
 
 - Two-player and single-player modes
-- Choice of X or O against the computer
+- Choice of * or # against the computer
 - Input validation (range and occupied squares)
 - Unbeatable computer using minimax
