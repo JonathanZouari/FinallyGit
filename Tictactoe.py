@@ -1,6 +1,7 @@
 """Tic-Tac-Toe. Run: python Tictactoe.py"""
 
 import sys
+import threading
 
 RED = "\033[31m"
 BLUE = "\033[34m"
@@ -39,6 +40,35 @@ def winner(board):
 
 def board_full(board):
     return all(board)
+
+
+def play_end_sound(won=True):
+    """Play a short win or draw sound in a background thread.
+
+    On Windows uses winsound.Beep; elsewhere falls back to the terminal bell.
+    Failures are ignored so a missing speaker never stops the game.
+    """
+
+    def _play():
+        try:
+            if sys.platform == "win32":
+                import winsound
+
+                if won:
+                    # Rising tones for a win.
+                    winsound.Beep(659, 120)
+                    winsound.Beep(784, 120)
+                    winsound.Beep(988, 220)
+                else:
+                    # Falling tones for a draw.
+                    winsound.Beep(392, 180)
+                    winsound.Beep(330, 280)
+            else:
+                print("\a", end="", flush=True)
+        except Exception:
+            pass
+
+    threading.Thread(target=_play, daemon=True).start()
 
 
 def color_mark(mark):
@@ -129,10 +159,12 @@ def play(vs_computer):
         if found:
             print_board(board)
             print(f"{color_mark(found)} wins!")
+            play_end_sound(won=True)  # end-of-game sound
             return
         if board_full(board):
             print_board(board)
             print("Draw.")
+            play_end_sound(won=False)  # end-of-game sound
             return
         turn = "O" if turn == "X" else "X"
 

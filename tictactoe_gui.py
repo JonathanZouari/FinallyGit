@@ -3,7 +3,7 @@
 import tkinter as tk
 from tkinter import ttk
 
-from Tictactoe import WIN_LINES, board_full, minimax, winner
+from Tictactoe import WIN_LINES, board_full, minimax, play_end_sound, winner
 
 BG = "#1e1e2e"
 PANEL = "#313244"
@@ -183,10 +183,12 @@ class TicTacToeGUI:
             self.game_over = True
             self._highlight_win(found)
             self.status.config(text=f"{found} wins!", fg=X_COLOR if found == "X" else O_COLOR)
+            play_end_sound(won=True)  # end-of-game sound
             return
         if board_full(self.board):
             self.game_over = True
             self.status.config(text="Draw.", fg=MUTED)
+            play_end_sound(won=False)  # end-of-game sound
             return
 
         self.turn = "O" if self.turn == "X" else "X"
