@@ -71,7 +71,7 @@ def best_move(board, mark):
 class TicTacToeApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Tic-Tac-Toe")
+        self.root.title("BEST TIC TAC TOE")
         self.root.resizable(False, False)
         self.root.configure(bg="#f4f4f5")
 
@@ -92,7 +92,7 @@ class TicTacToeApp:
 
         tk.Label(
             outer,
-            text="Tic-Tac-Toe",
+            text="BEST TIC TAC TOE",
             font=("Segoe UI", 20, "bold"),
             bg="#f4f4f5",
             fg="#18181b",
