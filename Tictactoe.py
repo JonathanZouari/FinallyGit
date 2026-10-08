@@ -53,12 +53,17 @@ def make_win_lines(size, win_len):
     return tuple(lines)
 
 
-def winner(board, lines):
+def winning_line(board, lines):
     for line in lines:
         first = board[line[0]]
         if first and all(board[i] == first for i in line):
-            return first
+            return line
     return None
+
+
+def winner(board, lines):
+    line = winning_line(board, lines)
+    return board[line[0]] if line else None
 
 
 def board_full(board):
@@ -143,7 +148,7 @@ def minimax(board, mark, maximizing, depth, max_depth, lines, alpha, beta):
     return best_score, best_move
 
 
-def computer_move(board, mark, size, lines):
+def choose_computer_index(board, mark, size, lines):
     _, index = minimax(
         board,
         mark,
@@ -155,7 +160,12 @@ def computer_move(board, mark, size, lines):
         10_000,
     )
     if index is None:
-        index = empty_cells(board)[0]
+        return empty_cells(board)[0]
+    return index
+
+
+def computer_move(board, mark, size, lines):
+    index = choose_computer_index(board, mark, size, lines)
     board[index] = mark
     print(f"Computer ({color_mark(mark)}) plays square {index + 1}.")
 
