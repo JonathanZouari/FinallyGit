@@ -1,5 +1,7 @@
 # Tic-Tac-Toe
 
+![Empty Tic-Tac-Toe board at the start of the game, squares numbered 1 to 9](assets/tictactoe-game-start.jpg)
+
 A command-line Tic-Tac-Toe game written in Python. Play against a friend on the same computer, or against a computer opponent that uses the minimax algorithm.
 
 ## Requirements
