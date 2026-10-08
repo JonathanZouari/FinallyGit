@@ -16,8 +16,8 @@ python Tictactoe.py
 
 At the start of each game, choose a mode:
 
-1. **Two players** — you and another person take turns on the same keyboard. `*` (star) always goes first.
-2. **Vs computer** — play as `*` (goes first) or `-` (dash). The computer uses minimax and plays a perfect game, so the best result against it is a draw.
+1. **Two players** — you and another person take turns on the same keyboard. `?` (question mark) always goes first.
+2. **Vs computer** — play as `?` (goes first) or `&`. The computer uses minimax and plays a perfect game, so the best result against it is a draw.
 
 Squares are numbered 1–9, left to right, top to bottom:
 
@@ -29,4 +29,4 @@ Squares are numbered 1–9, left to right, top to bottom:
 7 | 8 | 9
 ```
 
-Empty squares show their number. Taken squares show `*` (star) or `-` (dash). Enter a number from 1 to 9 on your turn. After a win or a draw, you can play again or quit.
+Empty squares show their number. Taken squares show `?` or `&`. Enter a number from 1 to 9 on your turn. After a win or a draw, you can play again or quit.
