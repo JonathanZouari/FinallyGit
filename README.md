@@ -6,7 +6,7 @@ Classic Tic-Tac-Toe in the terminal. Play hot-seat with a friend, or challenge a
 
 - Two-player mode on the same keyboard
 - Single-player mode with an optimal minimax AI
-- Choose X (first) or O when playing the computer
+- Choose `*` (first) or `#` when playing the computer
 - Clear board display with numbered empty squares
 - Replay loop until you quit
 
@@ -24,7 +24,7 @@ python Tictactoe.py
 When prompted:
 
 1. Choose `1` for two players, or `2` to play against the computer
-2. In computer mode, pick `X` or `O`
+2. In computer mode, pick `*` or `#`
 3. Enter a square number (`1`–`9`) on your turn
 4. After the game ends, type `y` to play again or anything else to quit
 
