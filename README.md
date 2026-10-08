@@ -18,7 +18,7 @@ python Tictactoe.py
 1. Choose a mode:
    - `1` — two human players
    - `2` — play against the computer
-2. Against the computer, choose `X` (you go first) or `O` (the computer goes first).
+2. Against the computer, choose `*` (you go first) or `#` (the computer goes first).
 3. On your turn, type a square number from `1` to `9`. Empty squares show their numbers on the board.
 
 ```
