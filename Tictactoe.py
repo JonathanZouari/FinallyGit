@@ -152,4 +152,9 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    if "--cli" in sys.argv:
+        main()
+    else:
+        from tictactoe_gui import main as gui_main
+
+        gui_main()
