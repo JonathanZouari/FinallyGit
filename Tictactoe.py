@@ -103,6 +103,7 @@ def play(vs_computer):
         if found:
             print_board(board)
             print(f"{found} wins!")
+            print("ניצחת יאאלוף!!")
             return
         if board_full(board):
             print_board(board)
