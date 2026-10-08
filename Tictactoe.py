@@ -1,5 +1,8 @@
 """Tic-Tac-Toe. Run: python Tictactoe.py"""
 
+STAR = "*"
+DASH = "-"
+
 WIN_LINES = (
     (0, 1, 2),
     (3, 4, 5),
@@ -44,7 +47,7 @@ def minimax(board, mark, maximizing):
     if board_full(board):
         return 0, None
 
-    opponent = "O" if mark == "X" else "X"
+    opponent = DASH if mark == STAR else STAR
     current = mark if maximizing else opponent
     best_score = -2 if maximizing else 2
     best_move = None
@@ -83,15 +86,15 @@ def human_move(board, mark):
 
 def play(vs_computer):
     board = [""] * 9
-    human_mark = "X"
-    computer_mark = "O"
+    human_mark = STAR
+    computer_mark = DASH
 
     if vs_computer:
-        choice = input("Play as X (goes first) or O? [X/O]: ").strip().upper()
-        if choice == "O":
-            human_mark, computer_mark = "O", "X"
+        choice = input("Play as * (goes first) or -? [*/-]: ").strip()
+        if choice == DASH:
+            human_mark, computer_mark = DASH, STAR
 
-    turn = "X"
+    turn = STAR
     while True:
         print_board(board)
         if vs_computer and turn == computer_mark:
@@ -108,7 +111,7 @@ def play(vs_computer):
             print_board(board)
             print("Draw.")
             return
-        turn = "O" if turn == "X" else "X"
+        turn = DASH if turn == STAR else STAR
 
 
 def main():
