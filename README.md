@@ -1,36 +1,49 @@
 # Tic-Tac-Toe
 
-Classic Tic-Tac-Toe in the terminal. Play hot-seat with a friend, or challenge a computer that never loses.
+Classic Tic-Tac-Toe in Python. Play in the terminal or with a desktop GUI. Marks are `*` (first) and `#` (second).
 
 ## Features
 
-- Two-player mode on the same keyboard
-- Single-player mode with an optimal minimax AI
-- Choose `*` (first) or `#` when playing the computer
-- Clear board display with numbered empty squares
-- Replay loop until you quit
+- Terminal and GUI versions
+- Two-player mode or vs computer
+- Optimal minimax AI (never loses)
+- Choose `*` or `#` when playing the computer
+- New game / replay support
 
 ## Requirements
 
 - Python 3.8+
-- No third-party packages
+- No third-party packages (`tkinter` is included with most Python installs)
 
 ## Quick start
+
+**GUI (recommended):**
+
+```bash
+python TictactoeGUI.py
+```
+
+**Terminal:**
 
 ```bash
 python Tictactoe.py
 ```
 
-When prompted:
+### GUI controls
 
-1. Choose `1` for two players, or `2` to play against the computer
+1. Pick **vs Computer** or **Two Players**
+2. In computer mode, choose your mark (`*` goes first)
+3. Click a square to place your mark
+4. Use **New Game** to restart
+
+### Terminal controls
+
+1. Choose `1` for two players, or `2` vs computer
 2. In computer mode, pick `*` or `#`
-3. Enter a square number (`1`–`9`) on your turn
-4. After the game ends, type `y` to play again or anything else to quit
+3. Enter a square number (`1`–`9`)
+4. Type `y` to play again
 
 ## Board layout
-
-Empty squares show their number. Marks replace the number when played:
 
 ```
 1 | 2 | 3
@@ -44,7 +57,8 @@ Empty squares show their number. Marks replace the number when played:
 
 ```
 .
-├── Tictactoe.py   # Game logic and CLI
+├── Tictactoe.py      # Shared logic + terminal game
+├── TictactoeGUI.py   # Desktop GUI (tkinter)
 └── README.md
 ```
 
